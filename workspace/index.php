@@ -1,4 +1,5 @@
 <?php
+
 // initialize any config files
 require_once "config/init.php";
 
