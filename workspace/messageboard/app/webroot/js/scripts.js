@@ -67,6 +67,20 @@ $(document).ready(function(){
                 ).children().first().hide().fadeIn();
 
                 $(FORM)[0].reset();
+                setTimeout(function(){
+                    elipMessage();
+                    if($(".message-box").length >= 10){
+                        $(".message-box:last").last().remove();
+
+                        if(!$(".show-messages").length){
+                            $(".message-box:last").parent().append(`
+                            <div class="text-center">
+                                <button class="btn btn-secondary show-messages">Show More</button>
+                            </div>`);
+                        }
+                    }
+                }, 200);
+                
             }else{
                 snackBar(response.message);
             }
@@ -394,18 +408,23 @@ $(document).ready(function(){
                     </div>`);
                 }
 
-                $('.message-content').each(function() {
-                    console.log('yes');
-                    const $this = $(this);
-                    const fullHeight = $this.prop('scrollHeight');
-                    const maxHeight = parseInt($this.css('max-height'));
-                    if (fullHeight > maxHeight) {
-                        $this.siblings('.toggle-message').show();
-                    }
-                });
+                elipMessage();
+           
             }
         });
  
+    }
+
+    function elipMessage(){
+        $('.message-content').each(function() {
+            console.log('yes');
+            const $this = $(this);
+            const fullHeight = $this.prop('scrollHeight');
+            const maxHeight = parseInt($this.css('max-height'));
+            if (fullHeight > maxHeight) {
+                $this.siblings('.toggle-message').show();
+            }
+        });
     }
 
     if($('#thread-messages').length > 0){

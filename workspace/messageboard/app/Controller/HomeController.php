@@ -3,6 +3,13 @@ use Cake\I18n\Time;
 
 class HomeController extends AppController {
 	public $uses = array();
+
+	public $components = array('Paginator');
+
+    public $paginate = array(
+        'limit' => 25,
+        'contain' => array('message_content')
+    );
 	
 	public function beforeFilter (){
 		parent::beforeFilter();
@@ -151,7 +158,7 @@ class HomeController extends AppController {
 					'thread_id' => $this->request->data['User']['thread_id'],
 					'sender_id' => $user['id'],
 					'recipient_id' => $this->request->data['User']['recipient_id'],
-					'message_content' => $this->request->data['User']['message'],
+					'message_content' => strip_tags($this->request->data['User']['message']),
 					'created_at' => date('Y-m-d H:i:s'),
 					'created_ip' => $this->getUserIP()
 				]
@@ -167,7 +174,7 @@ class HomeController extends AppController {
 				$messageId = $savedMessageDetail['Messages']['id'];
 
 				$response['html'] = <<<HTML
-				<div class="card mb-3">
+				<div class="card mb-3 message-box">
 					<div class="card-body">
 						<div class="d-flex align-items-start justify-content-between">
 							<div class="position-absolute p-2 top-0 start-0">
@@ -184,8 +191,8 @@ class HomeController extends AppController {
 									{$userName}<span class="text-primary">(You)</span>
 									</span>
 								</div>
-							<p class="card-text">{$messageContent}</p>
-
+							<p class="card-text message-content">{$messageContent}</p>
+							<a href="#" class="toggle-message" style="display:none;">Show More</a>
 							</div>
 						<div class="flex-shrink-0">
 							<img src="{$profileImageURL}" class="profile-image" alt="User Image">
@@ -239,7 +246,7 @@ HTML;
 						'thread_id' => $savedThread['Threads']['id'],
 						'sender_id' => $user['id'],
 						'recipient_id' => $this->request->data['newMessage']['user_id'],
-						'message_content' => $this->request->data['newMessage']['message'],
+						'message_content' => strip_tags($this->request->data['newMessage']['message']),
 						'created_at' => date('Y-m-d H:i:s'),
 						'created_ip' => $this->getUserIP()
 					]
@@ -254,6 +261,13 @@ HTML;
 		}
 	
 		$this->redirect(['controller' => 'home', 'action' => 'messages']);
+		$this->autoRender = false;
+	}
+
+	public function getPhpVersion(){
+
+		//my curiousity leads me here.
+		echo phpversion();
 		$this->autoRender = false;
 	}
 
@@ -292,7 +306,7 @@ HTML;
 		$threadId = $message['Messages']['thread_id'];
 
 		$messageBoxes .= <<<HTML
-			<div class="card mb-3">
+			<div class="card mb-3 message-box">
 				<div class="card-body">
 					<div class="d-flex align-items-start">
 						<div class="p-2">
@@ -451,7 +465,7 @@ HTML;
 
 			if ($isOwner) {
 				$renderedMessages .= <<<HTML
-				<div class="card mb-3">
+				<div class="card mb-3 message-box">
 					<div class="card-body">
 						<div class="d-flex align-items-start justify-content-between">
 						<div class="position-absolute p-2 top-0 start-0">

@@ -20,7 +20,7 @@
         <div class="text-end p-2">
             <div class="row d-flex justify-content-between">
                 <div class="col-6 text-start">
-                    <?php if(isset($threadMessages)){ ?>
+                    <?php if(isset($threadId)){ ?>
                     <a href="../">Return</a>
                     <?php }else if(isset($userList)){ ?>
 

@@ -65,8 +65,8 @@ class ProfileController extends AppController {
                 [
                     'conditions' => [
                         'User.id' => $currentUserId
-    
-                ]]
+                    ]
+                ]
             );
 
             $this->User->id = $currentUserId;
@@ -78,6 +78,8 @@ class ProfileController extends AppController {
             }
            
             if ($this->User->save($userDetails)) {
+
+                $this->Auth->login($this->User->findById($currentUserId)['User']);
                 $response['success'] = true;
             } else {
                 $response['success'] = false;
