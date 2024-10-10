@@ -21,11 +21,22 @@ class ProfileController extends AppController {
     public function update() {
         $this->autoRender = false;
 
-        
-
         $response = [];
 
         $response['success'] = false;
+
+        $currentUserId = $this->Auth->user('id'); 
+    
+        $userDetails = $this->User->find('first',
+            [
+                'conditions' => [
+                    'User.id' => $currentUserId
+                ]
+            ]
+        );
+
+        // print_r($userDetails);
+        // die;
 
         if ($this->request->is('post')) {
             
@@ -38,8 +49,12 @@ class ProfileController extends AppController {
                 $fileTmpPath = $file['tmp_name']; 
                 $fileError = $file['error']; 
                 $fileSize = $file['size'];
-            
+                
+                $oldProfileImage = $userDetails['User']['profile_picture'];
                 $uploadDir = WWW_ROOT . 'uploads' . DS;
+
+                unlink($uploadDir.basename($oldProfileImage));
+
                 $uploadFile = $uploadDir . basename($fileName);
     
                 if ($fileError === UPLOAD_ERR_OK) {
@@ -60,16 +75,6 @@ class ProfileController extends AppController {
             if(!$userData['password']){
                 unset($userData['password']);
             }
-
-            $currentUserId = $this->Auth->user('id'); 
-    
-            $userDetails = $this->User->find('first',
-                [
-                    'conditions' => [
-                        'User.id' => $currentUserId
-                    ]
-                ]
-            );
 
             $this->User->id = $currentUserId;
 
