@@ -9,7 +9,7 @@ class ProfileController extends AppController {
 	}
     
 	public function index (){
-        
+        $this->set('threadId', 1);
 	}
 
     public function test(){
@@ -20,6 +20,8 @@ class ProfileController extends AppController {
 
     public function update() {
         $this->autoRender = false;
+
+        
 
         $response = [];
 

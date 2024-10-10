@@ -188,7 +188,7 @@ $(document).ready(function(){
                 $("#myMessages").html(response.html);
             } else {
 
-                if(response.count >= 0){
+                if(response.count >= 0 && searchKey == ''){
                     $("#myMessages").html(` <div class="container mt-5">
                                                 <div class="row justify-content-center">
                                                     <div class="col-md-6">
@@ -417,7 +417,6 @@ $(document).ready(function(){
 
     function elipMessage(){
         $('.message-content').each(function() {
-            console.log('yes');
             const $this = $(this);
             const fullHeight = $this.prop('scrollHeight');
             const maxHeight = parseInt($this.css('max-height'));

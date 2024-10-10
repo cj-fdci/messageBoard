@@ -113,6 +113,7 @@ class HomeController extends AppController {
 
 		switch($param){
 			case 'new':
+				$this->set('threadId', 1);
 				$this->newMessage();
 				break;
 			case 'view':
@@ -321,7 +322,8 @@ HTML;
 						<div class="flex-grow-1 ms-3 position-relative">
 							<a href="/messageboard/home/messages/view/{$threadId}" class="text-decoration-none w-100">
 								<div class="d-flex flex-column h-100">
-									<p class="card-text mb-1">$lastMessage</p>
+									<p class="card-text mb-1 message-content">$lastMessage</p>
+									<a href="#" class="toggle-message" style="display:none;">Show More</a>
 									<div class="mt-auto pt-4">
 										<p class="card-text text-muted mb-0 small text-end"> 
 											{$messageDate}

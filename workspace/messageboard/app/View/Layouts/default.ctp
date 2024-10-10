@@ -21,7 +21,7 @@
             <div class="row d-flex justify-content-between">
                 <div class="col-6 text-start">
                     <?php if(isset($threadId)){ ?>
-                    <a href="../">Return</a>
+                    <a href="<?php echo BASE_URL.'home/messages'; ?>">Return</a>
                     <?php }else if(isset($userList)){ ?>
 
                     <?php } ?>
