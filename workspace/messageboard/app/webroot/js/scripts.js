@@ -46,7 +46,39 @@ $(document).ready(function(){
             }
         });
     }
-    
+
+    $(document).on("click", '.edit-message', function(){
+
+        const CONTAINER = $(this);
+
+        const MESSAGE_ID = $(this).data('id');
+        const FORM_DATA = new FormData();
+
+        const NEW_MESSAGE = prompt('Enter your new message');
+
+        let updateConfirmation = confirm('Are you sure you want to edit this message?');
+
+        if(updateConfirmation){
+
+            FORM_DATA.append('ms_id', MESSAGE_ID);
+            FORM_DATA.append('message_content', NEW_MESSAGE);
+
+            const PARAM = {url:BASE_URL+'home/editmessage', data:FORM_DATA};
+
+            sendAjax(PARAM, function(response){
+
+                if(response.success){
+                    snackBar('Message has been updated successfully.');
+                    CONTAINER.parents(".message-box").find('.message-content').html(NEW_MESSAGE);
+                }
+
+            });
+
+            
+        }
+
+
+    });
 
     // message reply codes
 
@@ -139,12 +171,8 @@ $(document).ready(function(){
                 //     $("#update-response").fadeOut();
                 // }, 2000);
                 // $(FORM)[0].reset();
-
-                $
             }
         });
-
-
 
     });
 
@@ -189,33 +217,34 @@ $(document).ready(function(){
             } else {
 
                 if(response.count >= 0 && searchKey == ''){
-                    $("#myMessages").html(` <div class="container mt-5">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-6">
-                                                        <div class="card text-center">
-                                                            <div class="card-body">
-                                                                <h5 class="card-title">No Messages Yet</h5>
-                                                                <p class="card-text">It looks like you haven't started a conversation yet.</p>
-                                                                <!-- <a href="#" class="btn btn-primary">Start a Conversation</a> -->
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>`);
+                    $("#myMessages").html(` 
+                        <div class="container mt-5">
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title">No Messages Yet</h5>
+                                            <p class="card-text">It looks like you haven't started a conversation yet.</p>
+                                            <!-- <a href="#" class="btn btn-primary">Start a Conversation</a> -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`);
                 }else{
                     $("#myMessages").html(`
-                                            <div class="container mt-5">
-                                                <div class="row justify-content-center">
-                                                    <div class="col-md-6">
-                                                        <div class="card text-center">
-                                                            <div class="card-body">
-                                                                <h5 class="card-title">No Messages Found</h5>
-                                                                <p class="card-text">It looks like no results matched your search.</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                        <div class="container mt-5">
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h5 class="card-title">No Messages Found</h5>
+                                            <p class="card-text">It looks like no results matched your search.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     `);
                 }
             }
@@ -331,6 +360,8 @@ $(document).ready(function(){
             sendAjax(PARAM, function(response) {
                 if (response.success) {
                     $(PARENT).fadeOut();
+
+                    snackBar("Selected thread has been deleted successfully.");
                 }
             });
         }
@@ -359,6 +390,8 @@ $(document).ready(function(){
             sendAjax(PARAM, function(response) {
                 if (response.success) {
                     $(PARENT).fadeOut();
+
+                    snackBar("Selected message has been deleted successfully.");
                 }
             });
         }
@@ -438,6 +471,7 @@ $(document).ready(function(){
         defaultLimit = defaultLimit+10;
         isPagination = true;
         getThreadMessages(THREAD_ID, defaultLimit);
+        
     });
 
     $(document).on('click', '.toggle-message', function(e) {
@@ -480,19 +514,16 @@ $(document).ready(function(){
             errorMessage += '<div class="text-danger">Name is required.</div>';
         }
 
-        // Validate Email
         if ($('#UserEmail').val().trim() === '') {
             valid = false;
             errorMessage += '<div class="text-danger">Email is required.</div>';
         }
 
-        // Validate Password
         if ($('#UserPassword').val().trim() === '') {
             valid = false;
             errorMessage += '<div class="text-danger">Password is required.</div>';
         }
 
-        // Validate Confirm Password
         if ($('#UserConfirmPassword').val().trim() === '') {
             valid = false;
             errorMessage += '<div class="text-danger">Confirm Password is required.</div>';
@@ -504,6 +535,17 @@ $(document).ready(function(){
         if (!valid) {
             e.preventDefault();
             $('#message_error').append(errorMessage);
+        }
+    });
+
+    $(window).scroll(function() {
+        if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
+            defaultLimit = defaultLimit+10;
+            isPagination = true;
+            getThreadMessages(THREAD_ID, defaultLimit);
+
+            $(".show-messages").trigger("click");
+            $(".show-more-messages").trigger("click");
         }
     });
  });

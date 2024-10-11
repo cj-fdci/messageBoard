@@ -51,8 +51,8 @@ class AppController extends Controller {
 
             // if teh user is not logged in AND accesses a forbidden action,
             'logoutRedirect' => array(
-                'controller' => 'pages',
-                'action' => 'display',
+                'controller' => 'users',
+                'action' => 'login',
                 'home'
             ),
             'authenticate' => array(

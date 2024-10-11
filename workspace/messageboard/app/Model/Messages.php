@@ -29,6 +29,8 @@ App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
  *
  * @package       app.Model
  */
-class Message extends AppModel {
+class Messages extends AppModel {
+
+    public $primaryKey = 'ms_id';
 
 }

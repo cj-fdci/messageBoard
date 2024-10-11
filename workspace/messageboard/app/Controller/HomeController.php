@@ -26,7 +26,7 @@ class HomeController extends AppController {
 
 	public function main ($page=''){
 		$birthday = "OCTOBER 9, 1994";
-		$age = $this->getAge();
+		$age = '1';
 		$this->set("user_name", "LESTER AG PADUL");
 		$this->set("age", $age);
 		$this->set("birthday", $birthday);
@@ -104,9 +104,6 @@ class HomeController extends AppController {
 			'limit' => $limit,
 			'offset' => ($limit == 0) ? 0 : ($limit - 10)
 		]);
-			
-		
-	
 	}
 
 	public function messages($param = '', $messageLimit = 0){
@@ -172,16 +169,20 @@ class HomeController extends AppController {
 				$time = (new DateTime($messageDetails['Messages']['created_at']))->format('F j, Y : g:i A');
 				$userName = $user['name'];
 				$messageContent = $messageDetails['Messages']['message_content'];
-				$messageId = $savedMessageDetail['Messages']['id'];
-
+				$messageId = $savedMessageDetail['Messages']['ms_id'];
 				$response['html'] = <<<HTML
 				<div class="card mb-3 message-box">
 					<div class="card-body">
 						<div class="d-flex align-items-start justify-content-between">
-							<div class="position-absolute p-2 top-0 start-0">
-								<span class="bg-danger p-1 open-popup delete-message rounded" data-id="{$messageId}">
-									<i class="fas fa-trash text-white"></i>
-								</span>
+							<div class="position-absolute" style="top: -16px;left: 38px;">
+								<div class="btn-group">
+									<button class="btn btn-danger btn-sm px-1 py-0 open-popup delete-message" data-id="{$messageId}" style="font-size: 0.6rem;">
+										<i class="fas fa-trash"></i>
+									</button>
+									<button class="btn btn-warning text-white btn-sm px-1 py-0 edit-message" data-id="{$messageId}" style="font-size: 0.6rem;">
+										<i class="fas fa-edit"></i>
+									</button>
+								</div>
 							</div>
 							<div class="flex-grow-1 ms-3">
 								<div class="d-flex justify-content-between">
@@ -314,15 +315,14 @@ HTML;
 							<a href="/messageboard/profile/view/{$profileId}" class="text-decoration-none w-100">
 								<img class="profile-image rounded-circle" src="{$profileImage}" alt="User Image">
 								<div class="text-center mt-2">
-									<span>{$messageOwner}</span>
+									<span style="font-size:13px;">{$messageOwner}</span>
 								</div>
 							</a>
 						</div>
-			
 						<div class="flex-grow-1 ms-3 position-relative">
 							<a href="/messageboard/home/messages/view/{$threadId}" class="text-decoration-none w-100">
 								<div class="d-flex flex-column h-100">
-									<p class="card-text mb-1 message-content">$lastMessage</p>
+									<p class="card-text mb-1 message-content">{$lastMessage}</p>
 									<a href="#" class="toggle-message" style="display:none;">Show More</a>
 									<div class="mt-auto pt-4">
 										<p class="card-text text-muted mb-0 small text-end"> 
@@ -332,9 +332,11 @@ HTML;
 								</div>
 							</a>
 							<div class="position-absolute top-0 end-0" style="margin-top: 8px; margin-right: 8px;">
-								<span class="bg-danger p-1 open-popup delete-thread rounded" data-thread="{$threadId}">
-									<i class="fas fa-trash text-white"></i>
-								</span>
+								<div class="btn-group" role="group">
+									<button class="btn btn-danger btn-sm px-1 py-0 open-popup delete-thread rounded" data-thread="{$threadId}" style="font-size: 0.6rem;">
+										<i class="fas fa-trash"></i>
+									</button>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -467,30 +469,36 @@ HTML;
 
 			if ($isOwner) {
 				$renderedMessages .= <<<HTML
-				<div class="card mb-3 message-box">
-					<div class="card-body">
-						<div class="d-flex align-items-start justify-content-between">
-						<div class="position-absolute p-2 top-0 start-0">
-							<span class="bg-danger p-1 open-popup delete-message rounded" data-id="{$messageId}">
-								<i class="fas fa-trash text-white"></i>
-							</span>
+			<div class="card mb-3 message-box">
+				<div class="card-body">
+					<div class="d-flex align-items-start justify-content-between">
+						<div class="position-absolute" style="top: -16px;left: 38px;">
+							<div class="btn-group">
+								<button class="btn btn-danger btn-sm px-1 py-0 open-popup delete-message" data-id="{$messageId}" style="font-size: 0.6rem;">
+									<i class="fas fa-trash"></i>
+								</button>
+								<button class="btn btn-warning text-white btn-sm px-1 py-0 edit-message" data-id="{$messageId}" style="font-size: 0.6rem;">
+									<i class="fas fa-edit"></i>
+								</button>
+							</div>
 						</div>
-							<div class="flex-grow-1 ms-3">
-								<div class="d-flex justify-content-between">
-									<span class="text-muted small">{$messageCreatedAt}</span>
-									<span class="text-muted d-block">
-										{$messageOwner}<span class="text-primary"> (You)</span>
-									</span>
-								</div>
-								<p class="card-text message-content">{$messageContent}</p>
-								<a href="#" class="toggle-message" style="display: none;">Show More</a>
+						<div class="flex-grow-1 ms-3">
+							<div class="d-flex justify-content-between">
+								<span class="text-muted small">{$messageCreatedAt}</span>
+								<span class="text-muted d-block">
+									{$messageOwner}<span class="text-primary"> (You)</span>
+								</span>
 							</div>
-							<div class="flex-shrink-0">
-								<img class="profile-image rounded-circle" src="{$senderProfile}" alt="User Image">
-							</div>
+							<p class="card-text message-content">{$messageContent}</p>
+							<a href="#" class="toggle-message" style="display: none;">Show More</a>
+						</div>
+						<div class="flex-shrink-0">
+							<img class="profile-image rounded-circle" src="{$senderProfile}" alt="User Image">
 						</div>
 					</div>
 				</div>
+			</div>
+
 	HTML;
 			} else {
 				// sa lain
@@ -517,5 +525,34 @@ HTML;
 	
 		return $renderedMessages;
 	}
+
+	public function editMessage() {
+		$response = [];
+		$response['success'] = false;
+	
+		if ($this->request->is('post')) {
+			$messageId = $this->request->data['ms_id'];
+	
+			$updatedMessage = [
+				'ms_id' => $messageId,
+				'message_content' => $this->request->data['message_content'],
+				'updated_ip' => $this->getUserIP(),
+				'is_edited' => 1,
+				'updated_at' => date('Y-m-d H:i:s'),
+			];
+
+			$this->Messages->ms_id = $messageId;
+	
+			$this->Messages->set($updatedMessage);
+	
+			if ($this->Messages->save()) {
+				$response['success'] = true;
+			}
+		}
+	
+		echo json_encode($response);
+		$this->autoRender = false;
+	}
+	
 	
 }

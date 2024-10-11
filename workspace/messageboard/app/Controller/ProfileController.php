@@ -35,9 +35,6 @@ class ProfileController extends AppController {
             ]
         );
 
-        // print_r($userDetails);
-        // die;
-
         if ($this->request->is('post')) {
             
             $userData = $this->request->data['Users'];
