@@ -56,8 +56,13 @@ $(document).ready(function(){
 
         const NEW_MESSAGE = prompt('Enter your new message');
 
-        let updateConfirmation = confirm('Are you sure you want to edit this message?');
-
+        let updateConfirmation;
+        if(NEW_MESSAGE != null){
+            updateConfirmation = confirm('Are you sure you want to edit this message?');
+        }else{
+            return 0;
+        }
+       
         if(updateConfirmation){
 
             FORM_DATA.append('ms_id', MESSAGE_ID);
@@ -104,7 +109,7 @@ $(document).ready(function(){
                     if($(".message-box").length >= 10){
                         $(".message-box:last").last().remove();
 
-                        if(!$(".show-messages").length){
+                        if(!$(".show-messages").length && messageCount != 0){
                             $(".message-box:last").parent().append(`
                             <div class="text-center">
                                 <button class="btn btn-secondary show-messages">Show More</button>
@@ -210,7 +215,6 @@ $(document).ready(function(){
     function getMessages(PARAM){
 
         sendAjax(PARAM, function(response){
-            console.log(response);
 
             if (response.success) {
                 $("#myMessages").html(response.html);
@@ -247,11 +251,13 @@ $(document).ready(function(){
                         </div>
                     `);
                 }
+
             }
 
             if(response.count >= 10){
                 $("#myMessages").append(`<a class="btn btn-secondary show-more-messages">Show More</a>`);
             }
+        
         });
 
     }
@@ -261,6 +267,8 @@ $(document).ready(function(){
         const PARAM = {url:BASE_URL+'home/renderThreads', data:DATA};
         getMessages(PARAM);
     }
+
+    let isPaginable = true;
 
     $(document).on("click", ".show-more-messages", function(){
 
@@ -292,25 +300,29 @@ $(document).ready(function(){
 
             if (response.success) {
                 $("#myMessages").append(response.html);
-            } else {
-     
-                $("#myMessages").append(`
-                  <div class="container mt-5 no-message-found">
-                    <div class="row justify-content-center">
-                        <div class="col-md-6">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <h5 class="card-title">No Messages Found</h5>
-                                    <p class="card-text">It looks like you have reached the end of the messages.</p>
-                                </div>
-                            </div>
+                if(response.count){
+                    isPaginable = false;
+                }
+
+                if(response.count < 10){
+                    $("#myMessages").append(`
+                        <div class="container mt-5 no-message-found">
+                          <div class="row justify-content-center">
+                              <div class="col-md-6">
+                                  <div class="card text-center">
+                                      <div class="card-body">
+                                          <h5 class="card-title">No Messages Found</h5>
+                                          <p class="card-text">It looks like you have reached the end of the messages.</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
                         </div>
-                    </div>
-                  </div>
-                `);
+                    `);
+                }
             }
 
-           if(response.count > 10){
+           if(response.count >= 10){
             $("#myMessages").append(`<a class="btn btn-secondary show-more-messages">Show More</a>`);
            }
             
@@ -399,6 +411,7 @@ $(document).ready(function(){
 
     let isPagination = false;
     let defaultLimit = 10;
+    let messageCount = 0;
 
     function getThreadMessages(thread_id = 5, limit = 10){
 
@@ -406,13 +419,17 @@ $(document).ready(function(){
 
         const PARAM = { url: `${BASE_URL}home/getThreadMessages/${thread_id}/${limit}`, data: DATA };
 
+        
+
         sendAjax(PARAM, function(response){
             if(response.success){
 
                 if(isPagination){
                     $("#thread-messages").append(response.html);
 
-                    if(response.messages_count <= 10){
+                    messageCount = response.messages_count;
+                     
+                    if(response.messages_count < 10){
 
                         $("#thread-messages").append(`
                             <div class="container mt-5 no-message-found">
@@ -428,18 +445,21 @@ $(document).ready(function(){
                                 </div>
                             </div>
                             `);
+
+                        $(".show-messages").parent().remove();
+
+                    }else if(response.messages_count >= 10){
+                        $("#thread-messages").append(`
+                        <div class="text-center">
+                            <button class="btn btn-secondary show-messages">Show More</button>
+                        </div>`);
                     }
 
                 }else{
                     $("#thread-messages").html(response.html);
                 }
                
-                if(response.messages_count >= 10){
-                    $("#thread-messages").append(`
-                    <div class="text-center">
-                        <button class="btn btn-secondary show-messages">Show More</button>
-                    </div>`);
-                }
+              
 
                 elipMessage();
            
@@ -538,14 +558,26 @@ $(document).ready(function(){
         }
     });
 
-    $(window).scroll(function() {
-        if ($(window).scrollTop() + $(window).height() >= $(document).height()) {
-            defaultLimit = defaultLimit+10;
-            isPagination = true;
-            getThreadMessages(THREAD_ID, defaultLimit);
+    let firstTrigger = true;
 
-            $(".show-messages").trigger("click");
-            $(".show-more-messages").trigger("click");
-        }
-    });
+    if($("#thread-messages").length){
+        $(window).scroll(function() {
+            if (($(window).scrollTop() + $(window).height() >= $(document).height()) && isPaginable) {
+                const THREAD_ID = $('#thread-messages').data('thread');
+                defaultLimit = defaultLimit+10;
+    
+                setTimeout(function(){
+                    if(messageCount !=0 || firstTrigger){
+                        firstTrigger = false;
+                        isPagination = true;
+                        getThreadMessages(THREAD_ID, defaultLimit);
+                    }
+                    if(messageCount == 0 && isPagination == false){
+                        $('.show-messages').first().remove();
+                    }
+                },200);
+            }
+        });
+    }
+
  });

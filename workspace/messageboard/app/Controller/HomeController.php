@@ -101,7 +101,7 @@ class HomeController extends AppController {
 				'Messages.sender_id != Messages.recipient_id',
 				$searchTerm
 			],
-			'limit' => $limit,
+			'limit' => 10,
 			'offset' => ($limit == 0) ? 0 : ($limit - 10)
 		]);
 	}
@@ -437,7 +437,7 @@ HTML;
 			'conditions' => [
 				'Threads.thread_id' => $threadId
 			],
-			'limit' => $limit,
+			'limit' => 10,
 			'offset' => ($limit == 10)?0:($limit-10)
 		]);
 
