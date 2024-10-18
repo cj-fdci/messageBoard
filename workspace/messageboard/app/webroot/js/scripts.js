@@ -170,12 +170,6 @@ $(document).ready(function(){
                 ).children().first().hide().fadeIn();
 
                 snackBar(`Your profile has been updated successfully.`);
-                // $("#update-response").html(`Your profile has been updated successfully.`).addClass("text-success text-center").fadeIn();
-
-                // setTimeout(function(){
-                //     $("#update-response").fadeOut();
-                // }, 2000);
-                // $(FORM)[0].reset();
             }
         });
 
